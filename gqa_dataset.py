@@ -2,6 +2,7 @@ import json
 from torch.utils.data import Dataset
 from PIL import Image
 from transformers import AutoProcessor
+import os
 
 class GQADataset(Dataset):
     def __init__(self, jsonl_path, image_dir, processor):
@@ -18,35 +19,40 @@ class GQADataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        entry = self.data[idx]
-
-        image_path = f"{self.image_dir}/{entry['image']}"
+        item = self.data[idx]
+        image_path = os.path.join(self.image_dir, item['image'])
         image = Image.open(image_path).convert("RGB")
+
+        output_text = (
+            f"Thought: {item['thought'].strip()}\n\n"
+            f"Full answer: {item['full_answer'].strip()}\n\n"
+            f"Short answer: {item['answer'].strip()}"
+        )
 
         messages = [
             {
                 "role": "user",
                 "content": [
                     {"type": "image", "image": image},
-                    {"type": "text", "text": f"Question: {entry['question']}"}
+                    {"type": "text", "text": f"Question: {item['question'].strip()}"}
                 ]
             },
             {
                 "role": "assistant",
-                "content": [{"type": "text", "text": entry['rationale']}]
+                "content": [{"type": "text", "text": output_text}]
             }
         ]
 
-        input_data = self.processor.apply_chat_template(
+        processed = self.processor.apply_chat_template(
             messages,
-            add_generation_prompt=True,
+            return_tensors="pt",
             return_dict=True,
-            return_tensors="pt"
+            add_generation_prompt=True
         )
 
         return {
-            "input_ids": input_data["input_ids"][0],
-            "attention_mask": input_data["attention_mask"][0],
-            "pixel_values": input_data["pixel_values"][0],
-            "labels": input_data["input_ids"][0]
+            "input_ids": processed["input_ids"][0],
+            "attention_mask": processed["attention_mask"][0],
+            "pixel_values": processed["pixel_values"][0],
+            "labels": processed["input_ids"][0],
         }
