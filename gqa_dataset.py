@@ -43,16 +43,23 @@ class GQADataset(Dataset):
             }
         ]
 
-        processed = self.processor.apply_chat_template(
+        # === Processor는 string prompt만 반환 ===
+        prompt = self.processor.apply_chat_template(
             messages,
-            return_tensors="pt",
-            return_dict=True,
             add_generation_prompt=True
         )
 
+        # === Tokenize prompt → input_ids, attention_mask ===
+        tokenized = self.tokenizer(
+            prompt,
+            return_tensors="pt",
+            padding="max_length",
+            truncation=True,
+            max_length=512
+        )
+
         return {
-            "input_ids": processed["input_ids"][0],
-            "attention_mask": processed["attention_mask"][0],
-            "pixel_values": processed["pixel_values"][0],
-            "labels": processed["input_ids"][0],
+            "input_ids": tokenized["input_ids"].squeeze(0),
+            "attention_mask": tokenized["attention_mask"].squeeze(0),
+            "labels": tokenized["input_ids"].squeeze(0)
         }
