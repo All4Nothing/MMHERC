@@ -1,8 +1,31 @@
+# 기본 ML/DL 라이브러리
+torch>=2.0.0
 transformers>=4.39.0
-datasets
-peft
-accelerate
-torch
-requests
-bitsandbytes
-scipy
+accelerate>=0.27.0
+peft>=0.7.0
+trl>=0.7.0
+bitsandbytes>=0.41.0
+
+# 데이터 처리
+datasets>=2.15.0
+Pillow>=10.0.0  # PIL for image processing
+tqdm>=4.65.0
+
+# 문장 임베딩 (rewards.py의 semantic_reward_func에 필요)
+sentence-transformers>=2.2.2
+
+# 로깅 및 모니터링
+wandb>=0.15.0  # wandb 로깅 사용
+tensorboard>=2.15.0
+
+# 유틸리티
+numpy>=1.24.0
+scipy>=1.11.0
+requests>=2.31.0
+pyyaml>=6.0.1  # yaml 파일 처리
+
+# Flash Attention 지원
+flash-attn>=2.3.0  # flash_attention_2 사용을 위해 필요
+
+# 기타 의존성
+packaging>=23.0
