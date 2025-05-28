@@ -495,7 +495,7 @@ class Qwen2VLGRPOTrainer(Trainer):
         if self._signature_columns is None:
             self._signature_columns = ["prompt"]
 
-    def _get_train_sampler(self) -> Sampler:
+    def _get_train_sampler(self, dataset) -> Sampler:
         # Returns a sampler that
         # 1. ensures each prompt is repeated across multiple processes. This guarantees that identical prompts are
         #    distributed to different GPUs, allowing rewards to be computed and normalized correctly within each prompt
@@ -529,7 +529,7 @@ class Qwen2VLGRPOTrainer(Trainer):
             * self.args.gradient_accumulation_steps
         )
         return RepeatRandomSampler(
-            data_source=self.train_dataset,
+            data_source=dataset,
             mini_repeat_count=self.num_generations,
             batch_size=effective_batch_size // self.num_generations,
             repeat_count=self.num_iterations,

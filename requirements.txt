@@ -25,6 +25,7 @@ requests>=2.31.0
 pyyaml>=6.0.1  # yaml 파일 처리
 
 # Flash Attention 지원
+# Note: Install with: pip install flash-attn --no-build-isolation
 flash-attn>=2.3.0  # flash_attention_2 사용을 위해 필요
 
 # 기타 의존성

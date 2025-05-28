@@ -88,6 +88,24 @@ handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s -
 logger.addHandler(handler)
 
 
+system_message = """You are a Vision Language Model that specializes in interpreting general visual scenes, such as indoor spaces, objects, people, or environments.
+
+Your task is to look at the provided image and answer natural language questions about it.
+
+You must follow this EXACT format:
+<thought>your reasoning</thought>
+<answer>your answer(one or two words)</answer>
+
+Rules:
+1. You must use both <thought> and <answer> tags
+2. Your answer must be exactly ONE or TWO WORDS only
+3. Do not add any text outside these tags
+4. Do not use any other tags or formats
+5. Be concise and accurate based on the visual evidence
+
+Avoid unnecessary explanation. Focus only on answering the question based on the visual information in the image."""
+
+
 def get_checkpoint(training_args):
     if os.path.isdir(training_args.output_dir):
         return get_last_checkpoint(training_args.output_dir)
@@ -162,14 +180,19 @@ class CustomDataset:
             "answer": example["answer"],
             "prompt": (
                 {
+                    "role": "system",
+                    "content": [{"type": "text", "text": system_message}],
+                },
+                {
                     "role": "user",
                     "content": [
                         {"type": "image"},
-                        {"type": "text", "text": f"{example['question']}\n\nYou must follow this EXACT format:\n<thought>your reasoning</thought>\n<answer>one word</answer>\n\nRules:\n1. You must use both <thought> and <answer> tags\n2. Your answer must be exactly ONE WORD\n3. Do not add any text outside these tags\n4. Do not use any other tags or formats"},
+                        {"type": "text", "text": f"{example['question']}"}, # \n\nYou must follow this EXACT format:\n<thought>your reasoning</thought>\n<answer>one word</answer>\n\nRules:\n1. You must use both <thought> and <answer> tags\n2. Your answer must be exactly ONE WORD\n3. Do not add any text outside these tags\n4. Do not use any other tags or formats"
                     ],
                 },
             ),
-        } 
+        }
+
 
 
 def grpo_function(model, model_args, script_args, training_args):
