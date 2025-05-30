@@ -115,4 +115,12 @@ See `requirements.txt` for the complete list of dependencies. Key requirements i
 
 ## License
 
-[Add your license information here]
+This project is licensed under the Tongyi Qianwen License. The base model Qwen2.5-VL is also licensed under the Tongyi Qianwen License.
+
+For more information about the license, please refer to:
+- [Tongyi Qianwen License](https://github.com/QwenLM/Qwen-VL/blob/main/LICENSE)
+- [Qwen2.5-VL Model License](https://huggingface.co/Qwen/Qwen2.5-VL-3B-Instruct)
+
+## Acknowledgments
+
+This project's GRPO implementation is based on and modified from [Vision_GRPO](https://github.com/FusionBrainLab/Vision_GRPO/) by FusionBrainLab, which is licensed under the Apache-2.0 License. We have adapted their implementation to work with our specific use case and model architecture.
