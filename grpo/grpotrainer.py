@@ -885,21 +885,24 @@ class Qwen2VLGRPOTrainer(Trainer):
             model, input_ids, attention_mask, pixel_values, image_grid_thw, logits_to_keep
         )
 
-        # Compute the loss
+        # CHANGED: Explicitly calculate batch size from advantages tensor
+        # This ensures we have a consistent reference point for batch size
         advantages = inputs["advantages"]
         batch_size = advantages.size(0)
 
-        # Get ref_per_token_logps from inputs
+        # CHANGED: Use get() method for safer access to ref_per_token_logps
+        # This prevents KeyError if the key doesn't exist in the inputs dictionary
         ref_per_token_logps = inputs.get("ref_per_token_logps")
         
-        # Ensure all tensors have matching batch size
+        # CHANGED: Ensure all tensors have matching batch size by explicit slicing
+        # This prevents potential shape mismatches during loss computation
         completion_mask = inputs["completion_mask"][:batch_size]
         per_token_logps = per_token_logps[:batch_size]
         if ref_per_token_logps is not None:
             ref_per_token_logps = ref_per_token_logps[:batch_size]
 
-        # When using num_iterations == 1, old_per_token_logps == per_token_logps, so we can skip it's computation (see
-        # _generate_and_score_completions) and use per_token_logps.detach() instead.
+        # CHANGED: Apply batch size slicing to old_per_token_logps as well
+        # This ensures consistency with other tensors
         old_per_token_logps = inputs["old_per_token_logps"] if self.num_iterations > 1 else per_token_logps.detach()
         old_per_token_logps = old_per_token_logps[:batch_size]
         
